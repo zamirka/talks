@@ -2,38 +2,42 @@
 # It has been slightly modified here for clarity and for use in the "present" format; the original
 # used a precursor to that tool.
 
-Concurrency is not Parallelism
-Waza Jan 11, 2012
+Concurrency is not Parallelism 
+(Конкурентность – это не параллелизм)
 
+Waza, 11 января 2012
+ 
 Rob Pike
 r@golang.org
 
-* Video
+* Запись выступления
 
-This talk was presented at Heroku's Waza conference in January 2012.
+Есть запись оригинального выступленя на конференции Waza от Heroku, которая прошла в январе 2012
 
-.link http://vimeo.com/49718712 Watch the talk on Vimeo
+.image waza/pike.png _ 300
 
-* The modern world is parallel
+Посмотреть можно по ссылке [[http://vimeo.com/49718712][http://vimeo.com/49718712]]
 
-Multicore.
+* Мы живем в эпоху параллелизма
 
-Networks.
+Многоядерность.
 
-Clouds of CPUs.
+Сети.
 
-Loads of users.
+Облака для вычислений.
 
-Our technology should help.
-That's where concurrency comes in.
+Наргузка от пользователей.
 
-* Go supports concurrency
+Технологии должны помогать нам во взаимодействии со всем этим.
+И конкурентныые вычисления делают это.
 
-Go provides:
+* Язык Go поддерживает конкурентные вычисления из коробки
 
-- concurrent execution (goroutines)
-- synchronization and messaging (channels)
-- multi-way concurrent control (select)
+Для этого Go предлагает:
+
+- конкурентное исполнени (горутины)
+- синхронизация и обмен сообщениями (каналы)
+- одновременное управление конкурентными каналами (select)
 
 * Concurrency is cool! Yay parallelism!!
 
