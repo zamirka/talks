@@ -29,51 +29,52 @@ r@golang.org
 Наргузка от пользователей.
 
 Технологии должны помогать нам во взаимодействии со всем этим.
-И конкурентныые вычисления делают это.
+И конкурентные вычисления делают это.
 
 * Язык Go поддерживает конкурентные вычисления из коробки
 
 Для этого Go предлагает:
 
-- конкурентное исполнени (горутины)
+- конкурентное исполнение (горутины)
 - синхронизация и обмен сообщениями (каналы)
 - одновременное управление конкурентными каналами (select)
 
-* Concurrency is cool! Yay parallelism!!
+*  Конкурентность - это куруто! Ура параллелизму!!
 
-NO! A fallacy.
+НЕТ! Ошибка.
 
-When Go was announced, many were confused by the distinction.
+Когда язык Go был представлен было много путаницы. Монгие не понимали разницу.
 
-"I ran the prime sieve with 4 processors and it got slower!"
+"У меня алогитм нахождения простых числел(решето Эратосфена) на 4 процессорах работает медленнее чем раньше!"
 
-* Concurrency
+* Конкурентость
 
-Programming as the composition of independently executing processes.
+Программирование по принципу композиции независимо выполняющихся процессов.
 
-(Processes in the general sense, not Linux processes. Famously hard to define.)
+(В общем понимании процессы – это не те процессы, что, например в Linux. Очень тяжело дать коррекное определение)
 
-* Parallelism
+* Параллелизм
 
-Programming as the simultaneous execution of (possibly related) computations.
+Программирование по принципу одновременного исполнения вычислений(возможно связанных). 
 
-* Concurrency vs. parallelism
 
-Concurrency is about dealing with lots of things at once.
+* Конкурентность vs. параллелизм
 
-Parallelism is about doing lots of things at once.
+Конкурентость – это как взаимодействовать со множеством объектов одновременно.
 
-Not the same, but related.
+Параллелизм – это как делать много дел одновременно.
 
-Concurrency is about structure, parallelism is about execution.
+Не одно и тоже, но связанно.
 
-Concurrency provides a way to structure a solution to solve a problem that may (but not necessarily) be parallelizable.
+Конкурентность – это про структуру, тогда как параллелизм – это про исполнение.
 
-* An analogy
+Конкурентность позволяет выстроить решение проблемы, которое может быть(но не обязательно) распараллелено.
 
-Concurrent: Mouse, keyboard, display, and disk drivers.
+* Аналогия
 
-Parallel: Vector dot product.
+Конкурентно: драйвера для мыши, клавиатуры, дисплея и жестких дисков.
+
+Параллельно: произведение векторов, сетевое взаимодействие(например разговор по Skype: видео+голос одновременно).
 
 * Concurrency plus communication
 
