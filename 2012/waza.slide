@@ -10,6 +10,9 @@ Waza, 11 января 2012
 Rob Pike
 r@golang.org
 
+Адаптация
+Замир Мусаев
+
 * Запись выступления
 
 Есть запись оригинального выступленя на конференции Waza от Heroku, которая прошла в январе 2012
@@ -20,16 +23,14 @@ r@golang.org
 
 * Мы живем в эпоху параллелизма
 
-Многоядерность.
-
-Сети.
-
-Облака для вычислений.
-
-Наргузка от пользователей.
+- Многоядерность.
+- Сети.
+- Облака для вычислений.
+- Наргузка от пользователей.
 
 Технологии должны помогать нам во взаимодействии со всем этим.
-И конкурентные вычисления делают это.
+
+Что конкурентные подход успешно и делает.
 
 * Язык Go поддерживает конкурентные вычисления из коробки
 
@@ -55,7 +56,7 @@ r@golang.org
 
 * Параллелизм
 
-Программирование по принципу одновременного исполнения вычислений(возможно связанных). 
+Программирование по принципу одновременного исполнения или одновременных вычислений(возможно связанных). 
 
 
 * Конкурентность vs. параллелизм
@@ -130,10 +131,10 @@ C. A. R. Hoare: Communicating Sequential Processes (CACM 1978)
 Такая конструкция не становится параллельной автоматически!
 
 А что если в один момент времени работает только один суслик?
-Тогда конструкция не перестанет быть конкурентной, но не параллельной.
+Тогда конструкция не перестанет быть конкурентной, но уже не параллельная.
 
 
-Как правило, такие конструкции автоматически поддаются распараллеливанию.
+Как правило, такие конструкции легко поддаются распараллеливанию.
 
 Более того, конкурентная композиция позволяет выстраивать и другие конструкции.
 
@@ -166,7 +167,7 @@ C. A. R. Hoare: Communicating Sequential Processes (CACM 1978)
 
 Четыре различные сусликовые процедуры:
 
-- сложить книг в тачку
+- сложить книги в тачку
 - отвезти тачку к мусоросжигательной печи
 - выгрузить содержимое тачки в мусоросжигательную печь
 - вернуть пустую тачку к стопке с книгами
@@ -187,17 +188,15 @@ C. A. R. Hoare: Communicating Sequential Processes (CACM 1978)
 
 * Другой подход
 
-Here's another way to structure the problem as the concurrent composition of gopher procedures.
 Вот вам другой возможный подход к решению проблемы путем организации сусликов в конкурентные процедуры.
 
-Two gopher procedures, plus a staging pile.
 Две сусликовые процедуры с промежуточной стопкой.
 
 .image waza/gophercomplex3.jpg
 
 * Распараллеливаем как обычно
 
-Чтобы получить больую производительность запускаем больше конкурентных процедур.
+Чтобы получить большую производительность запускаем больше конкурентных процедур.
 
 .image waza/gophercomplex4.jpg
 
@@ -222,228 +221,29 @@ Two gopher procedures, plus a staging pile.
 - Как только у нас появится разбиение процессов распараллеливание последует само собой.
 - При этом все настолько просто, что при любом количестве ресурсов общий результат не страдает.
 
-* Back to Computing
+* Если вернуться к компьютерам
 
-In our book transport problem, substitute:
+В нашей задаче перевозки книг:
 
-- book pile => web content
-- gopher => CPU
-- cart => marshaling, rendering, or networking
-- incinerator => proxy, browser, or other consumer
+- стопка книг => контент
+- суслик => CPU
+- тачка => обработка, рендеринг или передача по сети
+- мусоросжигательная печь => прокси, браузер или любой другой потребитель
 
-It becomes a concurrent design for a scalable web service.
-Gophers serving web content.
+Таким образом мы получаем конкурентную архитектуру для масштабируемых сервисов.
+Суслики, которые поставляют контент.
 
-* A little background about Go
+* Заключение
 
-Not the place for a tutorial, just quick highlights.
+Конкурентность – это мощно.
 
-* Goroutines
+Конкурентность – это не параллелизм.
 
-A goroutine is a function running independently  in the same address space as other goroutines
+Конкурентность позволяет распараллеливать.
 
-.code waza/snippets /f.runs/
+Конкурентность делает распараллеливание, масштабирование и многое другое легкодоступными.
 
-.code waza/snippets /f.starts.running/,/return/
-
-Like launching a function with shell's `&` notation.
-
-* Goroutines are not threads 
-
-(They're a bit like threads, but they're much cheaper.)
-
-Goroutines are multiplexed onto OS threads as required.
-
-When a goroutine blocks, that thread blocks but no other goroutine blocks.
-
-* Channels
-
-Channels are typed values that allow goroutines to synchronize and exchange information.
-
-.code waza/snippets /make.*chan/,/completedAt/
-
-* Select
-
-The `select` statement is like a `switch`, but the decision is based on ability to communicate rather than equal values.
-
-.code waza/snippets /select/,/}/
-
-* Go really supports concurrency
-
-Really.
-
-It's routine to create thousands of goroutines in one program.
-(Once debugged a program after it had created 1.3 million.)
-
-Stacks start small, but grow and shrink as required.
-
-Goroutines aren't free, but they're very cheap.
-
-* Closures are also part of the story
-
-Make some concurrent calculations easier to express.
-
-They are just local functions.
-Here's a non-concurrent example:
-
-.code waza/snippets /Compose/,/sin,/
-
-* Some examples
-
-Learn concurrent Go by osmosis.
-
-* Launching daemons
-
-Use a closure to wrap a background operation.
-
-This copies items from the input channel to the output channel:
-
-.code waza/snippets /copy.input/,/^}/
-
-The `for` `range` operation runs until channel is drained.
-
-* A simple load balancer (1)
-
-A unit of work:
-
-.code waza/load1 /type/,/^}/
-
-* A simple load balancer (2)
-
-A worker task
-
-.code waza/load1 /worker/,/^}/
-
-Must make sure other workers can run when one blocks.
-
-* A simple load balancer (3)
-
-The runner
-
-.code waza/load1 /Run/,/^}/
-
-Easy problem but also hard to solve concisely without concurrency.
-
-* Concurrency enables parallelism
-
-The load balancer is implicitly parallel and scalable.
-
-`NumWorkers` could be huge.
-
-The tools of concurrency make it almost trivial to build a safe, working, scalable, parallel design.
-
-* Concurrency simplifies synchronization
-
-No explicit synchronization needed.
-
-The structure of the program is implicitly synchronized.
-
-* That was too easy
-
-Let's do a more realistic load balancer.
-
-* Load balancer
-
-.image waza/gopherchart.jpg
-
-* Request definition
-
-The requester sends Requests to the balancer
-
-.code waza/load2 /^type.Request/,/^}/
-
-Note the return channel inside the request.
-Channels are first-class values.
-
-* Requester function
-
-An artificial but illustrative simulation of a requester, a load generator.
-
-.code waza/load2 /^func.requester/,/^}/
-
-* Worker definition
-
-A channel of requests, plus some load tracking data.
-
-.code waza/load2 /type.Worker/,/^}/
-
-* Worker
-
-Balancer sends request to most lightly loaded worker
-
-.code waza/load2 /^func.*work.*done/,/^}/
-
-The channel of requests (`w.requests`) delivers requests to each worker.  The balancer tracks the number of pending requests as a measure of load.
-Each response goes directly to its requester.
-
-Could run the loop body as a goroutine for parallelism.
-
-* Balancer definition
-
-The load balancer needs a pool of workers and a single channel to which requesters can report task completion.
-
-.code waza/load2 /type.Pool/,/^}/
-
-* Balancer function
-
-Easy!
-
-.code waza/load2 /func.*balance/,/^}/
-
-Just need to implement dispatch and completed.
-
-* A heap of channels
-
-Make Pool an implementation of the `Heap` interface by providing a few methods such as:
-
-.code waza/load2 /func.*Less/,/^}/
-
-Now we balance by making the `Pool` a heap tracked by load.
-
-* Dispatch
-
-All the pieces are in place.
-
-.code waza/load2 /Send.Request/,/^}/
-
-* Completed
-
-.code waza/load2 /Job.is.complete/,/^}/
-
-* Lesson
-
-A complex problem can be broken down into easy-to-understand components.
-
-The pieces can be composed concurrently.
-
-The result is easy to understand, efficient, scalable, and correct.
-
-Maybe even parallel.
-
-* One more example
-
-We have a replicated database and want to minimize latency by asking them all and returning the first response to arrive.
-
-* Query a replicated database
-
-.code waza/snippets /func.Query/,/^}/
-Concurrent tools and garbage collection make this an easy solution to a subtle problem.
-
-(Teardown of late finishers is left as an exercise.)
-
-
-* Conclusion
-
-
-Concurrency is powerful.
-
-Concurrency is not parallelism.
-
-Concurrency enables parallelism.
-
-Concurrency makes parallelism (and scaling and everything else) easy.
-
-* For more information
+* Больше информации:
 
 Go: golang.org
 
