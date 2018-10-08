@@ -76,148 +76,151 @@ r@golang.org
 
 Параллельно: произведение векторов, сетевое взаимодействие(например разговор по Skype: видео+голос одновременно).
 
-* Concurrency plus communication
+* Конкурентность и коммуникация(обмен сообщениями)
 
-Concurrency is a way to structure a program by breaking it into pieces that can be executed independently.
+Конкурентность – это способ структурировать программу путем разбиения ее на фрагменты, которые могут исполняться независимо.
 
-Communication is the means to coordinate the independent executions.
+Коммуникация(обмен сообщениями) необходима для координации независимо исполняющихся процессов.
 
-This is the Go model and (like Erlang and others) it's based on CSP:
+По такой модели работает язык Go(как и язык Erlang и другие). Основой самой модели является CSP:
 
 C. A. R. Hoare: Communicating Sequential Processes (CACM 1978)
 
-* Gophers
+* Суслики
 
-This is too abstract. Let's get concrete.
+Все что я рассказывал слишком абстрактно. Перейдем к конкретике.
 
-* Our problem
+* Опишем проблему
 
-Move a pile of obsolete language manuals to the incinerator.
+Отвезти стопку руководств по устаревшему языку программирования в мусоросжигательную печь.
 
 .image waza/gophersimple1.jpg
 
-With only one gopher this will take too long.
+Один сулик будет делать это очень долго.
 
-* More gophers!
+* Нужно больше сусликов!
 
 .image waza/gophersimple3.jpg
 
-More gophers are not enough; they need more carts.
+Не достаточно просто добавить новых сусликов, им нужны еще и тачки.
 
-* More gophers and more carts
+* Больше сусликов и больше тачек
 
 .image waza/gophersimple2.jpg
 
-This will go faster, but there will be bottlenecks at the pile and incinerator.
-Also need to synchronize the gophers.
-A message (that is, a communication between the gophers) will do.
+Так дела пойдут быстрее, но образуются узкие места у стопки и у мусоросжигательной печи.
+Также сусликов необходимо координировать.
+Тут нам попмогут сообщения (Коммуникация между сусликами).
 
-* Double everything
+* Всего должно быть в два раза больше
 
-Remove the bottleneck; make them really independent.
-
-.image waza/gophersimple4.jpg
-
-This will consume input twice as fast.
-
-* Concurrent composition
+Исключим узкие места – сделаем сусликов действительно независимыми.
 
 .image waza/gophersimple4.jpg
-The concurrent composition of two gopher procedures.
 
-* Concurrent composition
+Так мы сможем справляться с работой в два раза быстрее.
 
-This design is not automatically parallel!
+* Конкурентная композиция
 
-What if only one gopher is moving at a time?
-Then it's still concurrent (that's in the design), just not parallel.
+.image waza/gophersimple4.jpg
+Конкурентная композиция из двух сусликов.
 
-However, it's automatically parallelizable!
+* Конкурентная композиция
 
-Moreover the concurrent composition suggests other models.
+Такая конструкция не становится параллельной автоматически!
 
-* Another design
+А что если в один момент времени работает только один суслик?
+Тогда конструкция не перестанет быть конкурентной, но не параллельной.
+
+
+Как правило, такие конструкции автоматически поддаются распараллеливанию.
+
+Более того, конкурентная композиция позволяет выстраивать и другие конструкции.
+
+* Другой подход
 
 .image waza/gophercomplex0.jpg
 
-Three gophers in action, but with likely delays.
-Each gopher is an independently executing procedure,
-plus coordination (communication).
+Три суслика за работой. Они делают свое дело, но вероятно с задержками.
+Каждый суслик – это независимо исполняемая процедура. 
+Плюс координация(коммуникация/обмен сообщениями) между всеми тремя.
 
-* Finer-grained concurrency
+* Еще больше раздробим конкурентность
 
-Add another gopher procedure to return the empty carts.
-
+Добавим еще одну сусликовую процедуру, которая будет возвращать пустые тачки.
 .image waza/gophercomplex1.jpg
+Чтобы сгладить процесс теперь у нас четыре суслика за работой. Каждый выполняет одну простую задачу.
 
-Four gophers in action for better flow, each doing one simple task.
+Если все организовать правильно(неправдоподобно, но не невозможно), то мы получим систему, которая работает в четыре раза быстрее, чем изначальная с одним сусликом. 
 
-If we arrange everything right (implausible but not impossible), that's four times faster than our original one-gopher design.
+* Выводы
 
-* Observation
+Мы повысили производительность нашей системы путем добавления конкурентных процедур к уже существующей конструкции.
 
-We improved performance by adding a concurrent procedure to the existing design.
+Больше сусликов, которые выполняют больше работы – да, так работает лучше.
 
-More gophers doing more work; it runs better.
+Это более глубокое понимание принципов утилизации ресурсов, чем просто параллелизм.
 
-This is a deeper insight than mere parallelism.
 
-* Concurrent procedures
+* Конкурентные процедуры
 
-Four distinct gopher procedures:
+Четыре различные сусликовые процедуры:
 
-- load books onto cart
-- move cart to incinerator
-- unload cart into incinerator
-- return empty cart
+- сложить книг в тачку
+- отвезти тачку к мусоросжигательной печи
+- выгрузить содержимое тачки в мусоросжигательную печь
+- вернуть пустую тачку к стопке с книгами
 
-Different concurrent designs enable different ways to parallelize.
+Различные конкурентные подходы позволяют по рвзному распараллеливать работу.
 
-* More parallelization!
+* Больше параллелизма!
 
-We can now parallelize on the other axis; the concurrent design makes it easy. Eight gophers, all busy.
-
-.image waza/gophercomplex2.jpg
-
-* Or maybe no parallelization at all
-
-Keep in mind, even if only one gopher is active at a time (zero parallelism), it's still a correct and concurrent solution.
+Теперь мы можем подойти к распараллеливанию с другой стороны. Конкурентные подходы делают эту задачу легкой. Восемь сусликов и все заняты.
 
 .image waza/gophercomplex2.jpg
 
-* Another design
+* Или возможно, у нас и вовсе не будет никакого параллелизма
+
+Помните, даже если в один момент времени только один суслик будет активен(нет параллелизма), то наша конструкция не перестает быть правильной и конкурентной.
+
+.image waza/gophercomplex2.jpg
+
+* Другой подход
 
 Here's another way to structure the problem as the concurrent composition of gopher procedures.
+Вот вам другой возможный подход к решению проблемы путем организации сусликов в конкурентные процедуры.
 
 Two gopher procedures, plus a staging pile.
+Две сусликовые процедуры с промежуточной стопкой.
 
 .image waza/gophercomplex3.jpg
 
-* Parallelize the usual way
+* Распараллеливаем как обычно
 
-Run more concurrent procedures to get more throughput.
+Чтобы получить больую производительность запускаем больше конкурентных процедур.
 
 .image waza/gophercomplex4.jpg
 
-* Or a different way
+* Или еще один подход
 
-Bring the staging pile to the multi-gopher concurrent model:
+Внедрим промежуточную стопку в конструкцию, где много сусликов:
 
 .image waza/gophercomplex5.jpg
 
-* Full on optimization
+* Полная оптимизация
 
-Use all our techniques. Sixteen gophers hard at work!
+Используем одновременно все наши подходы. 
+
+Все шестнадцать сусликов за тяжелым трудом!
 
 .image waza/gophercomplex6.jpg
 
-* Lesson
+* Какие уроки можно извлечь
 
-There are many ways to break the processing down.
-
-That's concurrent design.
-
-Once we have the breakdown, parallelization can fall out and correctness is easy.
+- Существует много подходов к разбиению процессов.
+- Это и есть конкурентый подход к проектированию.
+- Как только у нас появится разбиение процессов распараллеливание последует само собой.
+- При этом все настолько просто, что при любом количестве ресурсов общий результат не страдает.
 
 * Back to Computing
 
